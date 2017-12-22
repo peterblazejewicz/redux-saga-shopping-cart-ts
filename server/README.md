@@ -1,14 +1,8 @@
-# redux-saga-shopping-cart-ts
+# Server
 
-client+server for redux saga shopping cart by Daniel Stern
+The server side implementation for the project
 
-## Client
-
-TBD
-
-## Server
-
-Backing API built on Node.js
+## API
 
 ```ts
 app.use('/api', api);
