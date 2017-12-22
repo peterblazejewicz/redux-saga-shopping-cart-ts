@@ -7,65 +7,274 @@
 	},
 	"item": [
 		{
-			"name": "{host}/api/user/:id",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
-				"url": {
-					"raw": "{{host}}/api/user/:id",
-					"host": [
-						"{{host}}"
-					],
-					"path": [
-						"api",
-						"user",
-						":id"
-					],
-					"variable": [
+			"name": "cart",
+			"description": "",
+			"item": [
+				{
+					"name": "{host}/api/cart/:owner",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{host}}/api/cart/:owner",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"cart",
+								":owner"
+							],
+							"variable": [
+								{
+									"key": "owner",
+									"value": "U10000"
+								}
+							]
+						},
+						"description": "Get cart for given owner"
+					},
+					"response": [
 						{
-							"key": "id",
-							"value": "U10000"
+							"id": "9c208a1b-2668-4d3c-a185-3087197b6f2c",
+							"name": "Default",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"body": {},
+								"url": {
+									"raw": "api/user/:id",
+									"host": [
+										"api"
+									],
+									"path": [
+										"user",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": ""
+										}
+									]
+								}
+							},
+							"code": 200,
+							"_postman_previewlanguage": "",
+							"_postman_previewtype": "parsed",
+							"header": [],
+							"cookie": [],
+							"responseTime": 0,
+							"body": ""
 						}
 					]
 				},
-				"description": "Get user by id"
-			},
-			"response": [
 				{
-					"id": "2ccf59cd-8b96-48e7-b394-e2a80d8e4e0d",
-					"name": "Default",
-					"originalRequest": {
+					"name": "{host}/api/cart/validate/:owner",
+					"request": {
 						"method": "GET",
 						"header": [],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
-							"raw": "api/user/:id",
+							"raw": "{{host}}/api/cart/validate/:owner",
 							"host": [
-								"api"
+								"{{host}}"
 							],
 							"path": [
+								"api",
+								"cart",
+								"validate",
+								":owner"
+							],
+							"variable": [
+								{
+									"key": "owner",
+									"value": "U10000"
+								}
+							]
+						},
+						"description": "Check if there are available items for the cart"
+					},
+					"response": [
+						{
+							"id": "12166e88-6e10-4d34-8cb0-dd24984abc64",
+							"name": "Default",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"body": {},
+								"url": {
+									"raw": "api/user/:id",
+									"host": [
+										"api"
+									],
+									"path": [
+										"user",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": ""
+										}
+									]
+								}
+							},
+							"code": 200,
+							"_postman_previewlanguage": "",
+							"_postman_previewtype": "parsed",
+							"header": [],
+							"cookie": [],
+							"responseTime": 0,
+							"body": ""
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "card",
+			"description": "",
+			"item": [
+				{
+					"name": "{host}/api/card/charge/:owner",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{host}}/api/card/charge/:owner",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"card",
+								"charge",
+								":owner"
+							],
+							"variable": [
+								{
+									"key": "owner",
+									"value": "U10000"
+								}
+							]
+						},
+						"description": "Charge owner of the card"
+					},
+					"response": [
+						{
+							"id": "30cd5cd9-8208-4180-8cc3-7f7a936d1a45",
+							"name": "Default",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"body": {},
+								"url": {
+									"raw": "api/tax/:symbol",
+									"host": [
+										"api"
+									],
+									"path": [
+										"tax",
+										":symbol"
+									],
+									"variable": [
+										{
+											"key": "symbol",
+											"value": ""
+										}
+									]
+								}
+							},
+							"code": 200,
+							"_postman_previewlanguage": "",
+							"_postman_previewtype": "parsed",
+							"header": [],
+							"cookie": [],
+							"responseTime": 0,
+							"body": ""
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "user",
+			"description": "",
+			"item": [
+				{
+					"name": "{host}/api/user/:id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{host}}/api/user/:id",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
 								"user",
 								":id"
 							],
 							"variable": [
 								{
 									"key": "id",
-									"value": ""
+									"value": "U10000"
 								}
 							]
-						}
+						},
+						"description": "Get user by id"
 					},
-					"code": 200,
-					"_postman_previewlanguage": "",
-					"_postman_previewtype": "parsed",
-					"header": [],
-					"cookie": [],
-					"responseTime": 0,
-					"body": ""
+					"response": [
+						{
+							"id": "e3a29fbb-3fbe-475a-8904-cfd183108684",
+							"name": "Default",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"body": {},
+								"url": {
+									"raw": "api/user/:id",
+									"host": [
+										"api"
+									],
+									"path": [
+										"user",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": ""
+										}
+									]
+								}
+							},
+							"code": 200,
+							"_postman_previewlanguage": "",
+							"_postman_previewtype": "parsed",
+							"header": [],
+							"cookie": [],
+							"responseTime": 0,
+							"body": ""
+						}
+					]
 				}
 			]
 		},
@@ -99,7 +308,7 @@
 			},
 			"response": [
 				{
-					"id": "a4e455cf-134e-4e8c-b68b-61f8ba51888a",
+					"id": "44627ccd-ee4e-482c-b669-dfce0326cc6a",
 					"name": "Default",
 					"originalRequest": {
 						"method": "GET",
@@ -157,13 +366,13 @@
 	],
 	"variable": [
 		{
-			"id": "47e7834a-4f32-48c9-acd8-1cbc10666f56",
+			"id": "272ecd89-fc48-4f03-847e-5ec16449c184",
 			"key": "domain",
 			"value": "localhost:8081",
 			"type": "text"
 		},
 		{
-			"id": "2a6c5e1a-2747-4d86-a31c-f1b9d227c510",
+			"id": "2cfd668f-f527-4656-a9c0-d24de91ea43b",
 			"key": "host",
 			"value": "http://localhost:8081",
 			"type": "text"
