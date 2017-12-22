@@ -1,0 +1,172 @@
+{
+	"info": {
+		"name": "Saga Shopping Cart Server API",
+		"_postman_id": "39f06b7b-ac6b-186e-faea-d3fdc1b6f69d",
+		"description": "# Introduction\nWhat does your API do?\n\n# Overview\nThings that the developers should know about\n\n# Authentication\nWhat is the preferred way of using the API?\n\n# Error Codes\nWhat errors and status codes can a user expect?\n\n# Rate limit\nIs there a limit to the number of requests an user can send?",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "{host}/api/user/:id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{host}}/api/user/:id",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"user",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "U10000"
+						}
+					]
+				},
+				"description": "Get user by id"
+			},
+			"response": [
+				{
+					"id": "2ccf59cd-8b96-48e7-b394-e2a80d8e4e0d",
+					"name": "Default",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "api/user/:id",
+							"host": [
+								"api"
+							],
+							"path": [
+								"user",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"code": 200,
+					"_postman_previewlanguage": "",
+					"_postman_previewtype": "parsed",
+					"header": [],
+					"cookie": [],
+					"responseTime": 0,
+					"body": ""
+				}
+			]
+		},
+		{
+			"name": "{host}/api/tax/:symbol",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{host}}/api/tax/:symbol",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"tax",
+						":symbol"
+					],
+					"variable": [
+						{
+							"key": "symbol",
+							"value": "USD"
+						}
+					]
+				},
+				"description": "Get information about tax rate for currency symbol"
+			},
+			"response": [
+				{
+					"id": "a4e455cf-134e-4e8c-b68b-61f8ba51888a",
+					"name": "Default",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "api/tax/:symbol",
+							"host": [
+								"api"
+							],
+							"path": [
+								"tax",
+								":symbol"
+							],
+							"variable": [
+								{
+									"key": "symbol",
+									"value": ""
+								}
+							]
+						}
+					},
+					"code": 200,
+					"_postman_previewlanguage": "",
+					"_postman_previewtype": "parsed",
+					"header": [],
+					"cookie": [],
+					"responseTime": 0,
+					"body": ""
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "4ee5dd19-1a1d-4043-aaaf-a6ea292bbb4a",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "dfb640a5-d8b0-4da9-ad7a-b1618bd9d1b2",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "47e7834a-4f32-48c9-acd8-1cbc10666f56",
+			"key": "domain",
+			"value": "localhost:8081",
+			"type": "text"
+		},
+		{
+			"id": "2a6c5e1a-2747-4d86-a31c-f1b9d227c510",
+			"key": "host",
+			"value": "http://localhost:8081",
+			"type": "text"
+		}
+	]
+}

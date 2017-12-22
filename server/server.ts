@@ -203,20 +203,6 @@ app.get('/shipping/:items', (req, res) => {
   });
 });
 
-app.get('/tax/:symbol', (req, res) => {
-  const { symbol } = req.params;
-  const taxRate = database.taxRates.find(rate => rate.symbol === symbol);
-  if (!taxRate) {
-    return res.status(500).json({
-      symbol,
-      error: 'No tax rate info for symbol ' + symbol
-    });
-  }
-
-  return res.status(200).json({
-    rate: taxRate.rate
-  });
-});
 
 YamlDbContext.connect('database.yml')
   .then(db => {
