@@ -21,16 +21,6 @@ app.use(cors());
 
 app.use('/api', api);
 
-app.get('/items/:ids', (req, res) => {
-  const ids: string[] = req.params.ids.split(',');
-  const items = ids.map(id => database.items.find(item => item.id === id));
-  if (items.includes(undefined)) {
-    res.status(500).json({ error: 'A specified ID had no matching item' });
-  } else {
-    res.status(200).json(items);
-  }
-});
-
 app.get('/prices/:symbol/:ids', (req, res) => {
   const ids: string[] = req.params.ids.split(',');
   const items = ids.map(id => database.items.find(item => item.id === id));

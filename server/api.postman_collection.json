@@ -40,7 +40,7 @@
 					},
 					"response": [
 						{
-							"id": "9c208a1b-2668-4d3c-a185-3087197b6f2c",
+							"id": "5158a07a-355a-4497-b43c-1455bcd0dab3",
 							"name": "Default",
 							"originalRequest": {
 								"method": "GET",
@@ -104,7 +104,7 @@
 					},
 					"response": [
 						{
-							"id": "12166e88-6e10-4d34-8cb0-dd24984abc64",
+							"id": "131e87b5-5ce1-4321-9b57-872b4aa61020",
 							"name": "Default",
 							"originalRequest": {
 								"method": "GET",
@@ -174,7 +174,7 @@
 					},
 					"response": [
 						{
-							"id": "30cd5cd9-8208-4180-8cc3-7f7a936d1a45",
+							"id": "a1b8c1b4-113a-4b81-a3d8-d4a5371adc1c",
 							"name": "Default",
 							"originalRequest": {
 								"method": "GET",
@@ -243,7 +243,7 @@
 					},
 					"response": [
 						{
-							"id": "e3a29fbb-3fbe-475a-8904-cfd183108684",
+							"id": "53c6b957-9ddb-4855-b99c-4b872538d895",
 							"name": "Default",
 							"originalRequest": {
 								"method": "GET",
@@ -261,6 +261,75 @@
 									"variable": [
 										{
 											"key": "id",
+											"value": ""
+										}
+									]
+								}
+							},
+							"code": 200,
+							"_postman_previewlanguage": "",
+							"_postman_previewtype": "parsed",
+							"header": [],
+							"cookie": [],
+							"responseTime": 0,
+							"body": ""
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "item",
+			"description": "",
+			"item": [
+				{
+					"name": "{host}/api/items/:ids",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{host}}/api/items/:ids",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"items",
+								":ids"
+							],
+							"variable": [
+								{
+									"key": "ids",
+									"value": "I10000,I30000"
+								}
+							]
+						},
+						"description": "Get items by ids"
+					},
+					"response": [
+						{
+							"id": "35031768-b58e-4ffe-bdc3-05b831bceec8",
+							"name": "Default",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"body": {},
+								"url": {
+									"raw": "api/tax/:symbol",
+									"host": [
+										"api"
+									],
+									"path": [
+										"tax",
+										":symbol"
+									],
+									"variable": [
+										{
+											"key": "symbol",
 											"value": ""
 										}
 									]
@@ -308,7 +377,7 @@
 			},
 			"response": [
 				{
-					"id": "44627ccd-ee4e-482c-b669-dfce0326cc6a",
+					"id": "bb4bbb8f-b4ec-4955-ae1e-2df335d82ddb",
 					"name": "Default",
 					"originalRequest": {
 						"method": "GET",
@@ -366,13 +435,13 @@
 	],
 	"variable": [
 		{
-			"id": "272ecd89-fc48-4f03-847e-5ec16449c184",
+			"id": "1c879720-62cb-4e57-8f02-73cd1bea0521",
 			"key": "domain",
 			"value": "localhost:8081",
 			"type": "text"
 		},
 		{
-			"id": "2cfd668f-f527-4656-a9c0-d24de91ea43b",
+			"id": "ee1b01aa-9d29-4fd3-8e33-ab3e56f047dd",
 			"key": "host",
 			"value": "http://localhost:8081",
 			"type": "text"

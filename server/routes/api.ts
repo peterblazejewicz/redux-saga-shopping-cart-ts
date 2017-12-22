@@ -1,18 +1,23 @@
-import CardsController from '../controllers/cards-controller';
-import TaxesController from '../controllers/taxes-controller';
-import UsersController from '../controllers/user-controller';
 import YamlDbContext, { DbContext } from './../db/db-context';
+import {
+  CardsController,
+  CartsController,
+  ItemsController,
+  TaxesController,
+  UsersController
+} from './../controllers';
 import { Router } from 'express';
-import { validateCardOwner } from './../middlewares/';
-import { validateCartOwner } from './../middlewares';
-import CartsController from '../controllers/carts-controller';
+import { validateCardOwner, validateCartOwner } from './../middlewares';
 
 const api = Router();
 const dbContext: DbContext = YamlDbContext.create();
-const usersController = new UsersController(dbContext);
-const taxesController = new TaxesController(dbContext);
+
 const cardsController = new CardsController(dbContext);
 const cartsController = new CartsController(dbContext);
+const itemsController = new ItemsController(dbContext);
+const taxesController = new TaxesController(dbContext);
+const usersController = new UsersController(dbContext);
+
 const validateCardOwnerMiddleware = validateCardOwner(dbContext);
 const validateCartOwnerMiddleware = validateCartOwner(dbContext);
 
@@ -27,12 +32,6 @@ api.use(
   validateCartOwnerMiddleware
 );
 
-// user
-api.get('/user/:id', usersController.findById);
-
-// taxes
-api.get('/tax/:symbol', taxesController.findBySymbol);
-
 // card
 api.get('/card/charge/:owner', cardsController.chargeOwner);
 
@@ -42,5 +41,13 @@ api.get('/cart/:owner', cartsController.getCartForOwner);
 api.get('/cart/add/:owner/:itemID', cartsController.addItemToCart);
 api.get('/cart/remove/:owner/:itemID', cartsController.removeItemFromCart);
 
+// items
+api.get('/items/:ids', itemsController.getItemsByIds);
+
+// taxes
+api.get('/tax/:symbol', taxesController.findBySymbol);
+
+// user
+api.get('/user/:id', usersController.findById);
 
 export { api };
