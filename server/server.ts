@@ -1,19 +1,16 @@
-import { Card } from './Model/Card';
-import { Cart } from './Model/Cart';
-import { Database } from './Model/Database';
-import * as express from 'express';
-import { Request, Response } from 'express';
 import * as cors from 'cors';
-import * as YAML from 'yamljs';
+import * as express from 'express';
+import { DatabaseModel } from './models/Database';
+import { Request, Response } from 'express';
+import { ShoppingCartRequest } from './models/ShoppingCardRequest';
+import { connect } from './db/Database';
+
 const port = 8081;
 const serverDelayConstant = 100;
 
 const app = express();
 
-interface ShoppingCartRequest extends Request {
-  cart: Cart;
-  card: Card;
-}
+let database: DatabaseModel;
 
 // Simulate a small amount of delay to demonstrate app's async features
 app.use((req, res, next) => {
@@ -24,223 +21,224 @@ app.use((req, res, next) => {
 app.use(express.static('public'));
 app.use(cors());
 
-YAML.load('database.yml', (database: Database) => {
-  const makeCartAdjustmentRoute = (shouldAdd = true) => (
-    req: Request,
-    res: Response
-  ) => {
-    const { owner, itemID } = req.params;
-    const cart = database.carts.find(cart => cart.owner === owner);
-    if (!cart) {
-      return res.status(500).json({
-        error: 'No cart found with the specified ID',
-        owner
+const makeCartAdjustmentRoute = (shouldAdd = true) => (
+  req: Request,
+  res: Response
+) => {
+  const { owner, itemID } = req.params;
+  const cart = database.carts.find(cart => cart.owner === owner);
+  if (!cart) {
+    return res.status(500).json({
+      error: 'No cart found with the specified ID',
+      owner
+    });
+  }
+
+  const item = database.items.find(item => item.id === itemID);
+  if (!item) {
+    return res.status(500).json({
+      error: 'No item found with the specified ID',
+      itemID
+    });
+  }
+
+  const existingItem = cart.items.find(cartItem => cartItem.id === itemID);
+  if (existingItem) {
+    if (shouldAdd && existingItem.quantity >= item.quantityAvailable) {
+      return res.status(503).json({
+        error: 'An insufficient quantity of items remains.',
+        itemID,
+        quantityAvailable: item.quantityAvailable
       });
     }
-
-    const item = database.items.find(item => item.id === itemID);
-    if (!item) {
+    existingItem.quantity += shouldAdd ? 1 : -1;
+    if (existingItem.quantity === 0) {
+      cart.items = cart.items.filter(item => item.id !== itemID);
+    }
+  } else {
+    if (shouldAdd) {
+      cart.items.push({
+        quantity: 1,
+        id: itemID
+      });
+    } else {
       return res.status(500).json({
-        error: 'No item found with the specified ID',
+        error: 'No item with the specified ID exists in the cart to be removed',
+        owner,
         itemID
       });
     }
+  }
+  return res.status(200).send(cart);
+};
 
-    const existingItem = cart.items.find(cartItem => cartItem.id === itemID);
-    if (existingItem) {
-      if (shouldAdd && existingItem.quantity >= item.quantityAvailable) {
-        return res.status(503).json({
-          error: 'An insufficient quantity of items remains.',
-          itemID,
-          quantityAvailable: item.quantityAvailable
-        });
-      }
-      existingItem.quantity += shouldAdd ? 1 : -1;
-      if (existingItem.quantity === 0) {
-        cart.items = cart.items.filter(item => item.id !== itemID);
-      }
-    } else {
-      if (shouldAdd) {
-        cart.items.push({
-          quantity: 1,
-          id: itemID
-        });
-      } else {
-        return res.status(500).json({
-          error:
-            'No item with the specified ID exists in the cart to be removed',
-          owner,
-          itemID
-        });
-      }
-    }
-    return res.status(200).send(cart);
-  };
+app.get('/cart/add/:owner/:itemID', makeCartAdjustmentRoute(true));
+app.get('/cart/remove/:owner/:itemID', makeCartAdjustmentRoute(false));
 
-  app.get('/cart/add/:owner/:itemID', makeCartAdjustmentRoute(true));
-  app.get('/cart/remove/:owner/:itemID', makeCartAdjustmentRoute(false));
-
-  app.get('/user/:id', (req, res) => {
-    const id = req.params.id;
-    const user = database.users.find(user => user.id === id);
-    if (!user) {
-      return res.status(500).json({
-        error: 'No user with the specified ID',
-        id
-      });
-    } else {
-      return res.status(200).json(user);
-    }
-  });
-
-  app.use(
-    ['/cart/validate/:owner', '/cart/:owner', '/card/charge/:owner'],
-    (req: ShoppingCartRequest, res, next) => {
-      const { owner } = req.params;
-      const cart = database.carts.find(cart => cart.owner === owner);
-      if (!cart) {
-        return res
-          .status(404)
-          .json({ error: 'No cart with the specified owner', owner });
-      } else {
-        req.cart = cart;
-        return next();
-      }
-    }
-  );
-
-  app.get('/cart/validate/:owner', (req: ShoppingCartRequest, res) => {
-    const { items } = req.cart;
-    let validated = true;
-    let error = null;
-    items.forEach(({ id, quantity }) => {
-      const item = database.items.find(item => item.id === id);
-      if (item && item.quantityAvailable < quantity) {
-        validated = false;
-        error = 'There is an insufficient quantity of ' + id;
-      }
+app.get('/user/:id', (req, res) => {
+  const id = req.params.id;
+  const user = database.users.find(user => user.id === id);
+  if (!user) {
+    return res.status(500).json({
+      error: 'No user with the specified ID',
+      id
     });
-    res.status(200).json({ validated, error });
-  });
+  } else {
+    return res.status(200).json(user);
+  }
+});
 
-  app.get('/cart/:owner', (req: ShoppingCartRequest, res) => {
-    const cart = req.cart;
-    res.status(200).json(cart);
-  });
-
-  app.use(
-    ['/card/validate/:owner', '/card/charge/:owner'],
-    (req: ShoppingCartRequest, res, next) => {
-      const { owner } = req.params;
-      const card = database.cards.find(card => card.owner === owner);
-      if (!card) {
-        return res
-          .status(500)
-          .send({ error: `No card is available for user ${owner}` });
-      }
-      req.card = card;
+app.use(
+  ['/cart/validate/:owner', '/cart/:owner', '/card/charge/:owner'],
+  (req: ShoppingCartRequest, res, next) => {
+    const { owner } = req.params;
+    const cart = database.carts.find(cart => cart.owner === owner);
+    if (!cart) {
+      return res
+        .status(404)
+        .json({ error: 'No cart with the specified owner', owner });
+    } else {
+      req.cart = cart;
       return next();
     }
-  );
+  }
+);
 
-  app.get('/card/validate/:owner', (req: ShoppingCartRequest, res) => {
-    const { card } = req;
-    res.status(200).json({ validated: true, card });
+app.get('/cart/validate/:owner', (req: ShoppingCartRequest, res) => {
+  const { items } = req.cart;
+  let validated = true;
+  let error = null;
+  items.forEach(({ id, quantity }) => {
+    const item = database.items.find(item => item.id === id);
+    if (item && item.quantityAvailable < quantity) {
+      validated = false;
+      error = 'There is an insufficient quantity of ' + id;
+    }
   });
+  res.status(200).json({ validated, error });
+});
 
-  app.get('/card/charge/:owner', (req: ShoppingCartRequest, res) => {
-    const { card, cart } = req;
+app.get('/cart/:owner', (req: ShoppingCartRequest, res) => {
+  const cart = req.cart;
+  res.status(200).json(cart);
+});
+
+app.use(
+  ['/card/validate/:owner', '/card/charge/:owner'],
+  (req: ShoppingCartRequest, res, next) => {
     const { owner } = req.params;
-    const country =
-      database.users.find(user => user.id === owner)!.country || '';
-    const total = cart.items.reduce((total, { quantity, id }) => {
-      const item = database.items.find(item => item.id === id);
-      const symbol = country === 'CAD' ? 'cad' : 'usd';
-      const baseValue: number = item![symbol] || 0;
-      total += baseValue * quantity;
-      return total;
-    }, 0);
-
-    if (card.availableFunds <= total) {
-      return res.status(402).json({ success: false });
-    }
-
-    card.availableFunds -= total;
-    return res.status(201).send({ success: true });
-  });
-
-  app.get('/items/:ids', (req, res) => {
-    const ids: string[] = req.params.ids.split(',');
-    const items = ids.map(id => database.items.find(item => item.id === id));
-    if (items.includes(undefined)) {
-      res.status(500).json({ error: 'A specified ID had no matching item' });
-    } else {
-      res.status(200).json(items);
-    }
-  });
-
-  app.get('/prices/:symbol/:ids', (req, res) => {
-    const ids: string[] = req.params.ids.split(',');
-    const items = ids.map(id => database.items.find(item => item.id === id));
-    const supportedSymbols: Array<string> = ['CAD', 'USD'];
-    const symbol: string = req.params.symbol;
-    if (!supportedSymbols.includes(symbol)) {
-      return res.status(403).json({
-        error:
-          'The currency symbol provided is inaccurate, see list of supported currencies',
-        supportedSymbols
-      });
-    }
-
-    if (items.includes(undefined)) {
+    const card = database.cards.find(card => card.owner === owner);
+    if (!card) {
       return res
         .status(500)
-        .json({ error: 'A specified ID had no matching item' });
-    } else {
-      return res.status(200).json(
-        items.map(item => ({
-          id: item!.id,
-          symbol,
-          price: symbol === 'USD' ? item!.usd : item!.cad
-        }))
-      );
+        .send({ error: `No card is available for user ${owner}` });
     }
-  });
+    req.card = card;
+    return next();
+  }
+);
 
-  app.get('/shipping/:items', (req, res) => {
-    const ids: string[] = req.params.items.split(',');
-    let total = 0;
-    ids.forEach(id => {
-      const item = database.items.find(item => item.id === id);
-      if (item!.weight === 0) {
-        total += 0;
-      } else if (item!.weight < 0.5) {
-        total += 3.5;
-      } else {
-        total += 8.5;
-      }
-    });
-    res.status(200).json({
-      total
-    });
-  });
+app.get('/card/validate/:owner', (req: ShoppingCartRequest, res) => {
+  const { card } = req;
+  res.status(200).json({ validated: true, card });
+});
 
-  app.get('/tax/:symbol', (req, res) => {
-    const { symbol } = req.params;
-    const taxRate = database.taxRates.find(rate => rate.symbol === symbol);
-    if (!taxRate) {
-      return res.status(500).json({
+app.get('/card/charge/:owner', (req: ShoppingCartRequest, res) => {
+  const { card, cart } = req;
+  const { owner } = req.params;
+  const country = database.users.find(user => user.id === owner)!.country || '';
+  const total = cart.items.reduce((total, { quantity, id }) => {
+    const item = database.items.find(item => item.id === id);
+    const symbol = country === 'CAD' ? 'cad' : 'usd';
+    const baseValue: number = item![symbol] || 0;
+    total += baseValue * quantity;
+    return total;
+  }, 0);
+
+  if (card.availableFunds <= total) {
+    return res.status(402).json({ success: false });
+  }
+
+  card.availableFunds -= total;
+  return res.status(201).send({ success: true });
+});
+
+app.get('/items/:ids', (req, res) => {
+  const ids: string[] = req.params.ids.split(',');
+  const items = ids.map(id => database.items.find(item => item.id === id));
+  if (items.includes(undefined)) {
+    res.status(500).json({ error: 'A specified ID had no matching item' });
+  } else {
+    res.status(200).json(items);
+  }
+});
+
+app.get('/prices/:symbol/:ids', (req, res) => {
+  const ids: string[] = req.params.ids.split(',');
+  const items = ids.map(id => database.items.find(item => item.id === id));
+  const supportedSymbols: Array<string> = ['CAD', 'USD'];
+  const symbol: string = req.params.symbol;
+  if (!supportedSymbols.includes(symbol)) {
+    return res.status(403).json({
+      error:
+        'The currency symbol provided is inaccurate, see list of supported currencies',
+      supportedSymbols
+    });
+  }
+
+  if (items.includes(undefined)) {
+    return res
+      .status(500)
+      .json({ error: 'A specified ID had no matching item' });
+  } else {
+    return res.status(200).json(
+      items.map(item => ({
+        id: item!.id,
         symbol,
-        error: 'No tax rate info for symbol ' + symbol
-      });
+        price: symbol === 'USD' ? item!.usd : item!.cad
+      }))
+    );
+  }
+});
+
+app.get('/shipping/:items', (req, res) => {
+  const ids: string[] = req.params.items.split(',');
+  let total = 0;
+  ids.forEach(id => {
+    const item = database.items.find(item => item.id === id);
+    if (item!.weight === 0) {
+      total += 0;
+    } else if (item!.weight < 0.5) {
+      total += 3.5;
+    } else {
+      total += 8.5;
     }
-
-    return res.status(200).json({
-      rate: taxRate.rate
-    });
   });
-
-  app.listen(port, () => {
-    console.log(`Redux Saga Cart backend server is listening on ${port}`);
+  res.status(200).json({
+    total
   });
 });
+
+app.get('/tax/:symbol', (req, res) => {
+  const { symbol } = req.params;
+  const taxRate = database.taxRates.find(rate => rate.symbol === symbol);
+  if (!taxRate) {
+    return res.status(500).json({
+      symbol,
+      error: 'No tax rate info for symbol ' + symbol
+    });
+  }
+
+  return res.status(200).json({
+    rate: taxRate.rate
+  });
+});
+
+connect('database.yml')
+  .then(db => {
+    database = db;
+    app.listen(port, () => {
+      console.log(`Redux Saga Cart backend server is listening on ${port}`);
+    });
+  })
+  .catch(error => console.error(error));
