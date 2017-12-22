@@ -12,12 +12,12 @@ export default class UsersController {
     const id = req.params.id;
     const user = this.dbRepo.findById(id);
     if (!user) {
-      return res.status(500).json({
+      res.status(500).json({
         error: 'No user with the specified ID',
         id
       });
     } else {
-      return res.status(200).json(user);
+      res.status(200).json(user);
     }
   };
 }
