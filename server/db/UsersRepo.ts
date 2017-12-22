@@ -10,4 +10,10 @@ export default class UsersRepo {
   public findById(id: string): User | undefined {
     return this.db.users.find(user => user.id === id);
   }
+
+  public getUserCountryByUserId(id: string): string | undefined {
+    let user: User | undefined = this.db.users.find(user => user.id === id);
+    if (!user) return '';
+    return user.country;
+  }
 }
