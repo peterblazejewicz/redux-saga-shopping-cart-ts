@@ -1,16 +1,16 @@
 import * as cors from 'cors';
 import * as express from 'express';
-import { DatabaseModel } from './models/Database';
+import YamlDbContext, { DbContext } from './db/db-context';
+import { api } from './routes';
 import { Request, Response } from 'express';
 import { ShoppingCartRequest } from './models/ShoppingCardRequest';
-import { connect } from './db/Database';
 
 const port = 8081;
 const serverDelayConstant = 100;
 
 const app = express();
 
-let database: DatabaseModel;
+let database: DbContext;
 
 // Simulate a small amount of delay to demonstrate app's async features
 app.use((req, res, next) => {
@@ -75,19 +75,6 @@ const makeCartAdjustmentRoute = (shouldAdd = true) => (
 app.get('/cart/add/:owner/:itemID', makeCartAdjustmentRoute(true));
 app.get('/cart/remove/:owner/:itemID', makeCartAdjustmentRoute(false));
 
-app.get('/user/:id', (req, res) => {
-  const id = req.params.id;
-  const user = database.users.find(user => user.id === id);
-  if (!user) {
-    return res.status(500).json({
-      error: 'No user with the specified ID',
-      id
-    });
-  } else {
-    return res.status(200).json(user);
-  }
-});
-
 app.use(
   ['/cart/validate/:owner', '/cart/:owner', '/card/charge/:owner'],
   (req: ShoppingCartRequest, res, next) => {
@@ -138,10 +125,7 @@ app.use(
   }
 );
 
-app.get('/card/validate/:owner', (req: ShoppingCartRequest, res) => {
-  const { card } = req;
-  res.status(200).json({ validated: true, card });
-});
+app.use('/api', api);
 
 app.get('/card/charge/:owner', (req: ShoppingCartRequest, res) => {
   const { card, cart } = req;
@@ -234,7 +218,7 @@ app.get('/tax/:symbol', (req, res) => {
   });
 });
 
-connect('database.yml')
+YamlDbContext.connect('database.yml')
   .then(db => {
     database = db;
     app.listen(port, () => {
