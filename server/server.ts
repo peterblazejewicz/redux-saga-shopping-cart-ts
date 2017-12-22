@@ -1,3 +1,6 @@
+import { Card } from './Model/Card';
+import { Cart } from './Model/Cart';
+import { Database } from './Model/Database';
 import * as express from 'express';
 import { Request, Response } from 'express';
 import * as cors from 'cors';
@@ -7,6 +10,11 @@ const serverDelayConstant = 100;
 
 const app = express();
 
+interface ShoppingCartRequest extends Request {
+  cart: Cart;
+  card: Card;
+}
+
 // Simulate a small amount of delay to demonstrate app's async features
 app.use((req, res, next) => {
   const delay = (Math.random() * 15 + 5) * serverDelayConstant;
@@ -14,8 +22,9 @@ app.use((req, res, next) => {
 });
 
 app.use(express.static('public'));
+app.use(cors());
 
-const nativeObject = YAML.load('database.yml', database => {
+YAML.load('database.yml', (database: Database) => {
   const makeCartAdjustmentRoute = (shouldAdd = true) => (
     req: Request,
     res: Response
@@ -39,10 +48,7 @@ const nativeObject = YAML.load('database.yml', database => {
 
     const existingItem = cart.items.find(cartItem => cartItem.id === itemID);
     if (existingItem) {
-      if (
-        shouldAdd &&
-        parseInt(existingItem.quantity) >= parseInt(item.quantityAvailable)
-      ) {
+      if (shouldAdd && existingItem.quantity >= item.quantityAvailable) {
         return res.status(503).json({
           error: 'An insufficient quantity of items remains.',
           itemID,
@@ -68,7 +74,7 @@ const nativeObject = YAML.load('database.yml', database => {
         });
       }
     }
-    res.status(200).send(cart);
+    return res.status(200).send(cart);
   };
 
   app.get('/cart/add/:owner/:itemID', makeCartAdjustmentRoute(true));
@@ -83,13 +89,13 @@ const nativeObject = YAML.load('database.yml', database => {
         id
       });
     } else {
-      res.status(200).json(user);
+      return res.status(200).json(user);
     }
   });
 
   app.use(
     ['/cart/validate/:owner', '/cart/:owner', '/card/charge/:owner'],
-    (req, res, next) => {
+    (req: ShoppingCartRequest, res, next) => {
       const { owner } = req.params;
       const cart = database.carts.find(cart => cart.owner === owner);
       if (!cart) {
@@ -98,18 +104,18 @@ const nativeObject = YAML.load('database.yml', database => {
           .json({ error: 'No cart with the specified owner', owner });
       } else {
         req.cart = cart;
-        next();
+        return next();
       }
     }
   );
 
-  app.get('/cart/validate/:owner', (req, res) => {
+  app.get('/cart/validate/:owner', (req: ShoppingCartRequest, res) => {
     const { items } = req.cart;
     let validated = true;
     let error = null;
     items.forEach(({ id, quantity }) => {
       const item = database.items.find(item => item.id === id);
-      if (item.quantityAvailable < quantity) {
+      if (item && item.quantityAvailable < quantity) {
         validated = false;
         error = 'There is an insufficient quantity of ' + id;
       }
@@ -117,39 +123,40 @@ const nativeObject = YAML.load('database.yml', database => {
     res.status(200).json({ validated, error });
   });
 
-  app.get('/cart/:owner', (req, res) => {
+  app.get('/cart/:owner', (req: ShoppingCartRequest, res) => {
     const cart = req.cart;
     res.status(200).json(cart);
   });
 
   app.use(
     ['/card/validate/:owner', '/card/charge/:owner'],
-    (req, res, next) => {
+    (req: ShoppingCartRequest, res, next) => {
       const { owner } = req.params;
       const card = database.cards.find(card => card.owner === owner);
       if (!card) {
-        res
+        return res
           .status(500)
           .send({ error: `No card is available for user ${owner}` });
       }
       req.card = card;
-      next();
+      return next();
     }
   );
 
-  app.get('/card/validate/:owner', (req, res) => {
+  app.get('/card/validate/:owner', (req: ShoppingCartRequest, res) => {
     const { card } = req;
-    res.status(200).json({ validated: true });
+    res.status(200).json({ validated: true, card });
   });
 
-  app.get('/card/charge/:owner', (req, res) => {
+  app.get('/card/charge/:owner', (req: ShoppingCartRequest, res) => {
     const { card, cart } = req;
     const { owner } = req.params;
-    const country = database.users.find(user => user.id === owner).country;
+    const country =
+      database.users.find(user => user.id === owner)!.country || '';
     const total = cart.items.reduce((total, { quantity, id }) => {
       const item = database.items.find(item => item.id === id);
       const symbol = country === 'CAD' ? 'cad' : 'usd';
-      const baseValue = item[symbol];
+      const baseValue: number = item![symbol] || 0;
       total += baseValue * quantity;
       return total;
     }, 0);
@@ -159,11 +166,11 @@ const nativeObject = YAML.load('database.yml', database => {
     }
 
     card.availableFunds -= total;
-    res.status(201).send({ success: true });
+    return res.status(201).send({ success: true });
   });
 
   app.get('/items/:ids', (req, res) => {
-    const ids = req.params.ids.split(',');
+    const ids: string[] = req.params.ids.split(',');
     const items = ids.map(id => database.items.find(item => item.id === id));
     if (items.includes(undefined)) {
       res.status(500).json({ error: 'A specified ID had no matching item' });
@@ -173,10 +180,10 @@ const nativeObject = YAML.load('database.yml', database => {
   });
 
   app.get('/prices/:symbol/:ids', (req, res) => {
-    const ids = req.params.ids.split(',');
+    const ids: string[] = req.params.ids.split(',');
     const items = ids.map(id => database.items.find(item => item.id === id));
-    const supportedSymbols = ['CAD', 'USD'];
-    const symbol = req.params.symbol;
+    const supportedSymbols: Array<string> = ['CAD', 'USD'];
+    const symbol: string = req.params.symbol;
     if (!supportedSymbols.includes(symbol)) {
       return res.status(403).json({
         error:
@@ -190,24 +197,24 @@ const nativeObject = YAML.load('database.yml', database => {
         .status(500)
         .json({ error: 'A specified ID had no matching item' });
     } else {
-      res.status(200).json(
+      return res.status(200).json(
         items.map(item => ({
-          id: item.id,
+          id: item!.id,
           symbol,
-          price: symbol === 'USD' ? item.usd : item.cad
+          price: symbol === 'USD' ? item!.usd : item!.cad
         }))
       );
     }
   });
 
   app.get('/shipping/:items', (req, res) => {
-    const ids = req.params.items.split(',');
+    const ids: string[] = req.params.items.split(',');
     let total = 0;
     ids.forEach(id => {
       const item = database.items.find(item => item.id === id);
-      if (item.weight === 0) {
+      if (item!.weight === 0) {
         total += 0;
-      } else if (item.weight < 0.5) {
+      } else if (item!.weight < 0.5) {
         total += 3.5;
       } else {
         total += 8.5;
@@ -228,7 +235,7 @@ const nativeObject = YAML.load('database.yml', database => {
       });
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       rate: taxRate.rate
     });
   });
@@ -237,4 +244,3 @@ const nativeObject = YAML.load('database.yml', database => {
     console.log(`Redux Saga Cart backend server is listening on ${port}`);
   });
 });
-app.use(cors());
