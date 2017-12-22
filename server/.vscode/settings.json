@@ -1,0 +1,5 @@
+{
+  "typescript.autoImportSuggestions.enabled": true,
+  "typescript.tsdk": "./node_modules/typescript/lib",
+  "editor.codeLens": true
+}
