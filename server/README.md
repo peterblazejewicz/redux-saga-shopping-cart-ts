@@ -20,12 +20,6 @@ api.use(
   validateCartOwnerMiddleware
 );
 
-// user
-api.get('/user/:id', usersController.findById);
-
-// taxes
-api.get('/tax/:symbol', taxesController.findBySymbol);
-
 // card
 api.get('/card/charge/:owner', cardsController.chargeOwner);
 
@@ -34,6 +28,17 @@ api.get('/cart/validate/:owner', cartsController.checkAvailableQuantity);
 api.get('/cart/:owner', cartsController.getCartForOwner);
 api.get('/cart/add/:owner/:itemID', cartsController.addItemToCart);
 api.get('/cart/remove/:owner/:itemID', cartsController.removeItemFromCart);
+
+// items
+api.get('/items/:ids', itemsController.getItemsByIds);
+api.get('/prices/:symbol/:ids', itemsController.getPriceForItems);
+api.get('/shipping/:items', itemsController.getShippingRatesForItems);
+
+// taxes
+api.get('/tax/:symbol', taxesController.findBySymbol);
+
+// user
+api.get('/user/:id', usersController.findById);
 ```
 
 ## Author

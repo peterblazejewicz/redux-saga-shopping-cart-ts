@@ -40,7 +40,7 @@
 					},
 					"response": [
 						{
-							"id": "5158a07a-355a-4497-b43c-1455bcd0dab3",
+							"id": "28e5d528-f24c-405c-b257-848936044fb2",
 							"name": "Default",
 							"originalRequest": {
 								"method": "GET",
@@ -104,7 +104,7 @@
 					},
 					"response": [
 						{
-							"id": "131e87b5-5ce1-4321-9b57-872b4aa61020",
+							"id": "2f01c629-b470-469d-98fe-500430ac912b",
 							"name": "Default",
 							"originalRequest": {
 								"method": "GET",
@@ -174,7 +174,7 @@
 					},
 					"response": [
 						{
-							"id": "a1b8c1b4-113a-4b81-a3d8-d4a5371adc1c",
+							"id": "15de17f8-e817-4ac8-aceb-09f8d9558fab",
 							"name": "Default",
 							"originalRequest": {
 								"method": "GET",
@@ -243,7 +243,7 @@
 					},
 					"response": [
 						{
-							"id": "53c6b957-9ddb-4855-b99c-4b872538d895",
+							"id": "2512ed8b-50dd-4bd0-84b1-20427d57f7e4",
 							"name": "Default",
 							"originalRequest": {
 								"method": "GET",
@@ -312,7 +312,138 @@
 					},
 					"response": [
 						{
-							"id": "35031768-b58e-4ffe-bdc3-05b831bceec8",
+							"id": "cb4ee99f-690a-4ba6-9646-eb1cabc97aaa",
+							"name": "Default",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"body": {},
+								"url": {
+									"raw": "api/tax/:symbol",
+									"host": [
+										"api"
+									],
+									"path": [
+										"tax",
+										":symbol"
+									],
+									"variable": [
+										{
+											"key": "symbol",
+											"value": ""
+										}
+									]
+								}
+							},
+							"code": 200,
+							"_postman_previewlanguage": "",
+							"_postman_previewtype": "parsed",
+							"header": [],
+							"cookie": [],
+							"responseTime": 0,
+							"body": ""
+						}
+					]
+				},
+				{
+					"name": "{host}/api/prices/:symbol/:ids",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{host}}/api/prices/:symbol/:ids",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"prices",
+								":symbol",
+								":ids"
+							],
+							"variable": [
+								{
+									"key": "symbol",
+									"value": "USD"
+								},
+								{
+									"key": "ids",
+									"value": "I40000"
+								}
+							]
+						},
+						"description": "Get items prices for currency symbol"
+					},
+					"response": [
+						{
+							"id": "5b760a71-57b4-46b0-8633-34c08e61030e",
+							"name": "Default",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"body": {},
+								"url": {
+									"raw": "api/tax/:symbol",
+									"host": [
+										"api"
+									],
+									"path": [
+										"tax",
+										":symbol"
+									],
+									"variable": [
+										{
+											"key": "symbol",
+											"value": ""
+										}
+									]
+								}
+							},
+							"code": 200,
+							"_postman_previewlanguage": "",
+							"_postman_previewtype": "parsed",
+							"header": [],
+							"cookie": [],
+							"responseTime": 0,
+							"body": ""
+						}
+					]
+				},
+				{
+					"name": "{host}/api/shipping/:items",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{host}}/api/shipping/:items",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"shipping",
+								":items"
+							],
+							"variable": [
+								{
+									"key": "items",
+									"value": "I40000"
+								}
+							]
+						},
+						"description": "Get items shipping rates"
+					},
+					"response": [
+						{
+							"id": "45f16d9b-556d-447c-a77c-340bc9cfb575",
 							"name": "Default",
 							"originalRequest": {
 								"method": "GET",
@@ -377,7 +508,7 @@
 			},
 			"response": [
 				{
-					"id": "bb4bbb8f-b4ec-4955-ae1e-2df335d82ddb",
+					"id": "8a9f029c-6e0c-449a-b303-920750b1025f",
 					"name": "Default",
 					"originalRequest": {
 						"method": "GET",
@@ -435,13 +566,13 @@
 	],
 	"variable": [
 		{
-			"id": "1c879720-62cb-4e57-8f02-73cd1bea0521",
+			"id": "9f1360e6-69ee-4fbc-bde5-eccd492034c4",
 			"key": "domain",
 			"value": "localhost:8081",
 			"type": "text"
 		},
 		{
-			"id": "ee1b01aa-9d29-4fd3-8e33-ab3e56f047dd",
+			"id": "38de171a-911f-4944-b5c6-2107d3621334",
 			"key": "host",
 			"value": "http://localhost:8081",
 			"type": "text"

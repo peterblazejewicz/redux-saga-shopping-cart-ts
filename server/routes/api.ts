@@ -43,6 +43,8 @@ api.get('/cart/remove/:owner/:itemID', cartsController.removeItemFromCart);
 
 // items
 api.get('/items/:ids', itemsController.getItemsByIds);
+api.get('/prices/:symbol/:ids', itemsController.getPriceForItems);
+api.get('/shipping/:items', itemsController.getShippingRatesForItems);
 
 // taxes
 api.get('/tax/:symbol', taxesController.findBySymbol);
